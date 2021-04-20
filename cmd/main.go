@@ -6,6 +6,7 @@ import (
 	"timeseries"
 	"timeseries/lib/battery"
 	"timeseries/lib/cpu/heat"
+	"timeseries/lib/cpu/hog"
 )
 
 func main() {
@@ -17,6 +18,10 @@ func main() {
 	if err != nil {
 		log.Fatal(err)
 	}
+	cpuHog, err := hog.New("10s")
+	if err != nil {
+		log.Fatal(err)
+	}
 	log.Println("main start")
-	timeseries.Start(bat, cpuHeat)
+	timeseries.Start(bat, cpuHeat, cpuHog)
 }
