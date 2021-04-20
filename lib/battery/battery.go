@@ -39,7 +39,6 @@ func (bat *Battery) Run(c chan<- metric.Metric) {
 				Key:   "battery",
 				Value: fmt.Sprintf("%.0f", toFloat(now)/toFloat(full)*100),
 			}
-			log.Println("battery sent metric") // debug
 		}(ctx)
 	}
 }
