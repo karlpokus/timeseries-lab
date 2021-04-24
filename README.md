@@ -11,8 +11,9 @@ telemetry types
 This will most likely only work on linux on dell xps hardware.
 
 ````bash
-# run postgres
+# run postgres and grafana
 $ ./bin/pg/run.sh
+$ ./bin/grafana/run.sh
 # run collectors
 $ go run cmd/main.go
 ````
@@ -21,7 +22,7 @@ $ go run cmd/main.go
 - [ ] optimize postgres index, ingestion
 - [x] run postgres under docker
 - [ ] run collectors under systemd
-- [ ] grafana
+- [x] grafana
 - [ ] pg replication log https://wiki.postgresql.org/wiki/Streaming_Replication
 
 # license
