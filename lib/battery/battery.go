@@ -5,20 +5,19 @@ import (
 	"fmt"
 	"log"
 	"os/exec"
-	"strconv"
-	"strings"
 	"time"
 
-	"timeseries/lib/metric"
+	"timeseries/lib/telemetry"
 )
 
 type Battery struct {
 	interval time.Duration
+	name     string
 }
 
 // Run runs the data collector every specified interval to
 // collect current battery charge percentage
-func (bat *Battery) Run(c chan<- metric.Metric) {
+func (bat *Battery) Run(c chan<- telemetry.Record) {
 	bg := context.Background()
 	for {
 		time.Sleep(bat.interval) // kiss
@@ -35,17 +34,17 @@ func (bat *Battery) Run(c chan<- metric.Metric) {
 				log.Printf("battery err: %s", err)
 				return
 			}
-			c <- metric.Metric{
-				Key:   "battery",
-				Value: fmt.Sprintf("%.0f", toFloat(now)/toFloat(full)*100),
+			c <- telemetry.Record{
+				Time:  time.Now(),
+				Key:   bat.name,
+				Value: telemetry.ByteToFloat(now) / telemetry.ByteToFloat(full) * 100,
 			}
 		}(ctx)
 	}
 }
 
-func toFloat(b []byte) float64 {
-	f, _ := strconv.ParseFloat(strings.TrimSpace(string(b)), 64)
-	return f
+func (bat *Battery) Info() string {
+	return fmt.Sprintf("%s collector interval set to %s", bat.name, bat.interval)
 }
 
 func New(interval string) (*Battery, error) {
@@ -55,5 +54,6 @@ func New(interval string) (*Battery, error) {
 	}
 	return &Battery{
 		interval: d,
+		name:     "battery",
 	}, nil
 }

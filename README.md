@@ -1,18 +1,18 @@
 # timeseries-lab
 Let's collect some timeseries data from my laptop and shove them into postgres. If we're feeling jazzy we'll show them in grafana too.
 
-# telemetry
+telemetry types
 - [ ] boot/sleep
-- [ ] cpu heat
-- [x] battery charge state
-- [ ] cpuhogs
+- [x] cpu heat
+- [x] battery charge %
+- [x] cpuhogs
 
 # usage
-This will most likely only work on linux on dell xps.
+This will most likely only work on linux on dell xps hardware.
 
 ````bash
 # run postgres
-$ ./script/pg.sh
+$ ./bin/pg/run.sh
 # run collectors
 $ go run cmd/main.go
 ````
@@ -22,6 +22,7 @@ $ go run cmd/main.go
 - [x] run postgres under docker
 - [ ] run collectors under systemd
 - [ ] grafana
+- [ ] pg replication log https://wiki.postgresql.org/wiki/Streaming_Replication
 
 # license
 MIT

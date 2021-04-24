@@ -10,18 +10,22 @@ import (
 )
 
 func main() {
-	bat, err := battery.New("5s")
+	bat, err := battery.New("10s")
 	if err != nil {
 		log.Fatal(err)
 	}
-	cpuHeat, err := heat.New("7s")
+	cpuHeat, err := heat.New("5s")
 	if err != nil {
 		log.Fatal(err)
 	}
-	cpuHog, err := hog.New("10s")
+	cpuHog, err := hog.New("7s")
 	if err != nil {
 		log.Fatal(err)
 	}
 	log.Println("main start")
-	timeseries.Start(bat, cpuHeat, cpuHog)
+	err = timeseries.Start(bat, cpuHeat, cpuHog)
+	if err != nil {
+		log.Fatal(err)
+	}
+	log.Println("main exit")
 }
