@@ -9,23 +9,26 @@ import (
 	"timeseries/lib/cpu/hog"
 )
 
+var version string
+
 func main() {
-	bat, err := battery.New("10s")
+	log.SetFlags(0)
+	bat, err := battery.New("60s")
 	if err != nil {
 		log.Fatal(err)
 	}
-	cpuHeat, err := heat.New("5s")
+	cpuHeat, err := heat.New("60s")
 	if err != nil {
 		log.Fatal(err)
 	}
-	cpuHog, err := hog.New("7s")
+	cpuHog, err := hog.New("60s")
 	if err != nil {
 		log.Fatal(err)
 	}
-	log.Println("main start")
+	log.Printf("telemetry version %s start", version)
 	err = timeseries.Start(bat, cpuHeat, cpuHog)
 	if err != nil {
 		log.Fatal(err)
 	}
-	log.Println("main exit")
+	log.Println("telemetry exit")
 }

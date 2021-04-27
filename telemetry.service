@@ -1,0 +1,7 @@
+[Service]
+Type=exec
+ExecStart=%h/dev/timeseries-lab/bin/telemetry
+Restart=always
+
+[Install]
+WantedBy=default.target

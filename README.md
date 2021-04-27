@@ -12,10 +12,14 @@ This will most likely only work on linux on dell xps hardware.
 
 ````bash
 # run postgres and grafana
-$ ./bin/pg/run.sh
-$ ./bin/grafana/run.sh
+$ make pg && make grafana
 # run collectors
 $ go run cmd/main.go
+````
+
+# deploy
+````bash
+$ make deploy
 ````
 
 # todos
@@ -24,6 +28,9 @@ $ go run cmd/main.go
 - [ ] run collectors under systemd
 - [x] grafana
 - [ ] pg replication log https://wiki.postgresql.org/wiki/Streaming_Replication
+- [ ] dump records inserted every x
+- [x] use db connection pool w reconnects
+- [ ]
 
 # license
 MIT
