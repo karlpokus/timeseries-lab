@@ -4,20 +4,20 @@ import (
 	"context"
 	"time"
 
-	"github.com/jackc/pgx/v4"
+	"github.com/jackc/pgx/v4/pgxpool"
 	"timeseries/lib/telemetry"
 )
 
-func Connect(url string) (*pgx.Conn, error) {
+func Connect(url string) (*pgxpool.Pool, error) {
 	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
 	defer cancel()
-	return pgx.Connect(ctx, url)
+	return pgxpool.Connect(ctx, url)
 }
 
-func Insert(conn *pgx.Conn, rcd telemetry.Record) error {
+func Insert(pool *pgxpool.Pool, rcd telemetry.Record) error {
 	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
 	defer cancel()
-	tx, err := conn.Begin(ctx)
+	tx, err := pool.Begin(ctx)
 	if err != nil {
 		return err
 	}

@@ -2,7 +2,7 @@ package timeseries
 
 import (
 	"log"
-	"context"
+	"time"
 
 	"timeseries/lib/db"
 	"timeseries/lib/telemetry"
@@ -15,22 +15,30 @@ type Collector interface {
 
 func Start(collectors ...Collector) error {
 	url := "postgres://postgres:secret@localhost:5432/test"
-	conn, err := db.Connect(url)
+	pool, err := db.Connect(url)
 	if err != nil {
 		return err
 	}
 	log.Println("db connected")
-	defer conn.Close(context.Background())
+	defer pool.Close()
 	c := make(chan telemetry.Record)
 	for _, collector := range collectors {
 		log.Printf(collector.Info())
 		go collector.Run(c)
+		jitter()
 	}
 	for rcd := range c {
-		err = db.Insert(conn, rcd)
+		err = db.Insert(pool, rcd)
 		if err != nil {
+			// just logging here is a temporary solution.
+			// broken db connections will print an ugly error
+			// and then retry with another proper connection from the pool
 			log.Printf("db insert err: %s", err)
 		}
 	}
 	return nil
+}
+
+func jitter() {
+	time.Sleep(3 * time.Second)
 }
