@@ -18,19 +18,24 @@ $ go run cmd/main.go
 ````
 
 # deploy
+The agent contains the telemetry collectors. The api is just a test to try out the grafana JSON data source to build a REST data service.
+
 ````bash
-$ make deploy
+$ make deploy-agent
+$ make deploy-api
 ````
 
 # todos
-- [ ] optimize postgres index, ingestion
+- [ ] optimize postgres index, ingestion, retention
 - [x] run postgres under docker
 - [ ] run collectors under systemd
 - [x] grafana
 - [ ] pg replication log https://wiki.postgresql.org/wiki/Streaming_Replication
 - [ ] dump records inserted every x
 - [x] use db connection pool w reconnects
-- [ ]
+- [x] api service
+- [ ] bonus: run go binary in telemetry network namespace without docker
+- [ ] sql query builer https://github.com/Masterminds/squirrel
 
 # license
 MIT

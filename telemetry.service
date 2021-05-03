@@ -1,6 +1,6 @@
 [Service]
 Type=exec
-ExecStart=%h/dev/timeseries-lab/bin/telemetry
+ExecStart=%h/dev/timeseries-lab/bin/telemetry-agent
 Restart=always
 
 [Install]
