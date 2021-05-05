@@ -1,4 +1,5 @@
 https://grafana.com/grafana/plugins/simpod-json-datasource/
+https://github.com/grafana/simple-json-datasource
 
 To work with this datasource the backend needs to implement 4 endpoints:
 
