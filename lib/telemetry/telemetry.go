@@ -12,6 +12,39 @@ type Record struct {
 	Value float64
 }
 
+type Collector interface {
+	Run(c chan<- Record)
+	Info() string
+}
+
+type Range struct {
+	From time.Time `json:"from"`
+	To   time.Time `json:"to"`
+}
+
+type Target struct {
+	Data   interface{} `json:"data"` // empty string or {key: "", operator: "=", value: x}
+	Target string      `json:"target"`
+	Type   string      `json:"type"`
+}
+
+type Query struct {
+	Range         `json:"range"`
+	Targets       []Target `json:"targets"`
+	AdhocFilters  []string `json:"adhocFilters"`
+	MaxDataPoints int      `json:"maxDataPoints"`
+}
+
+type Search struct {
+	Type   string `json:"type"`
+	Target string `json:"target"`
+}
+
+type Response struct {
+	Target     string          `json:"target"`
+	Datapoints [][]interface{} `json:"datapoints"`
+}
+
 func ByteToFloat(b []byte) float64 {
 	return StringToFloat(string(b))
 }

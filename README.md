@@ -28,7 +28,7 @@ $ make deploy-api
 # todos
 - [ ] optimize postgres index, ingestion, retention
 - [x] run postgres under docker
-- [ ] run collectors under systemd
+- [x] run collectors under systemd
 - [x] grafana
 - [ ] pg replication log https://wiki.postgresql.org/wiki/Streaming_Replication
 - [ ] dump records inserted every x
@@ -36,6 +36,7 @@ $ make deploy-api
 - [x] api service
 - [ ] bonus: run go binary in telemetry network namespace without docker
 - [ ] sql query builer https://github.com/Masterminds/squirrel
+- [x] store interface
 
 # license
 MIT

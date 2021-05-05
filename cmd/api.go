@@ -6,8 +6,7 @@ import (
 	"log"
 	"net/http"
 
-	"github.com/jackc/pgx/v4/pgxpool"
-	"timeseries/lib/db"
+	"timeseries/lib/store"
 	"timeseries/lib/telemetry"
 )
 
@@ -31,16 +30,16 @@ func ok(w http.ResponseWriter, r *http.Request) {
 	w.WriteHeader(200)
 }
 
-func search(pool *pgxpool.Pool) http.HandlerFunc {
+func search(st store.Store) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
-		var sr db.SearchRequest
+		var sr telemetry.Search
 		if err := json.NewDecoder(r.Body).Decode(&sr); err != nil {
 			fail(w, err)
 			return
 		}
 		defer r.Body.Close()
 		log.Printf("POST /search for type: %s target: %s", sr.Type, sr.Target)
-		keys, err := db.Keys(pool)
+		keys, err := st.Keys()
 		if err != nil {
 			fail(w, err)
 			return
@@ -54,9 +53,9 @@ func search(pool *pgxpool.Pool) http.HandlerFunc {
 	}
 }
 
-func query(pool *pgxpool.Pool) http.HandlerFunc {
+func query(st store.Store) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
-		var q db.QueryRequest
+		var q telemetry.Query
 		if err := json.NewDecoder(r.Body).Decode(&q); err != nil {
 			fail(w, err)
 			return
@@ -66,27 +65,23 @@ func query(pool *pgxpool.Pool) http.HandlerFunc {
 		log.Printf("AdhocFilters %d", len(q.AdhocFilters))
 		log.Printf("Targets %+v", q.Targets)
 		log.Printf("MaxDataPoints %d", q.MaxDataPoints)
-		rcds, err := db.Query(pool, q)
+		rcds, err := st.Query(q)
 		if err != nil {
 			fail(w, err)
 			return
 		}
 		log.Printf("found %d records", len(rcds))
-		type Response struct {
-			Target     string          `json:"target"`
-			Datapoints [][]interface{} `json:"datapoints"`
-		}
 		// quick and dirty
-		var out []Response
-		bat := Response{
+		var out []telemetry.Response
+		bat := telemetry.Response{
 			Target:     "battery",
 			Datapoints: telemetry.Datapoints(rcds, "battery"),
 		}
-		heat := Response{
+		heat := telemetry.Response{
 			Target:     "heat",
 			Datapoints: telemetry.Datapoints(rcds, "heat"),
 		}
-		hog := Response{
+		hog := telemetry.Response{
 			Target:     "hog",
 			Datapoints: telemetry.Datapoints(rcds, "hog"),
 		}
@@ -122,18 +117,16 @@ func annotations(w http.ResponseWriter, r *http.Request) {
 }
 
 func main() {
-	url := "postgres://postgres:secret@pg:5432/test"
-	pool, err := db.Connect(url)
+	st, err := store.New("postgres://postgres:secret@pg:5432/test")
 	if err != nil {
 		log.Fatal(err)
 	}
 	log.Println("db connected")
-	defer pool.Close()
-
-	http.HandleFunc("/api/v1", ok)                      // GET
-	http.HandleFunc("/api/v1/search", search(pool))     // POST
-	http.HandleFunc("/api/v1/query", query(pool))       // POST
-	http.HandleFunc("/api/v1/annotations", annotations) // POST
+	defer st.Close()
+	http.HandleFunc("/api/v1", ok)
+	http.HandleFunc("/api/v1/search", search(st))
+	http.HandleFunc("/api/v1/query", query(st))
+	http.HandleFunc("/api/v1/annotations", annotations)
 	log.Println("v1 running on port 8989")
 	log.Fatal(http.ListenAndServe(":8989", nil))
 }
